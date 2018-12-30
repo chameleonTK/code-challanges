@@ -14,46 +14,27 @@
             height: 100%;
             text-align: center;
             font-family: 'Titillium Web', sans-serif;
+            background-color: black;
+            color: #fff;
         }
 
         canvas {
-            width: 600px;
-            height: 600px;
+            width: 500px;
+            height: 500px;
         }
     </style>
 </head>
 <body>
-    <h1>Chaotic movement with double pendulum</h1>
-    <h4>What is the pattern here?</h4>
-    <button id="btn" style="display: block;margin: auto;margin-top: 20px;" class="btn btn-default" type="button" >Reveal the pattern</button>
+    <h1>Lissajous Curve table</h1>
     <canvas id="sketch" data-processing-sources="sketch.pde"></canvas>
     <div>
-        <p>Inspired by <a href="https://www.youtube.com/watch?v=d0Z8wLLPNE0">Think Twice</a> </p>
-        <p>
-            <p><a href="https://www.myphysicslab.com/pendulum/double-pendulum-en.html">Double pendulum formular </a> </p>
-            <p><a href="https://www.myphysicslab.com/explain/runge-kutta-en.html">Runge-Kutta Algorithm</a> </p>
-        </p>
+        <p>Inspired by <a href="https://twitter.com/juliomulero/status/1039456605736185856">@juliomulero</a> </p>
     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 
     <script>
         $(document).ready(function(){
-            var show = true;
-            var processingInstance;
-            showLine();
-            function showLine() {
-                if (!processingInstance) {
-                    processingInstance = Processing.getInstanceById('sketch');
-                }
-
-                show = !show;
-                if (show) {
-                    processingInstance.showLine();
-                } else {
-                    processingInstance.noLine();
-                }
-            }
-            $("#btn").click(showLine);
+            
         })
         
     </script>
