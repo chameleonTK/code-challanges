@@ -9,6 +9,7 @@ Curve[][] curves;
 
 float speed = 0.01;
 float theta = 0;
+PGraphics pg;
 void setup() {
   size(1050, 1050);
   
@@ -34,6 +35,11 @@ void setup() {
     }
   }
   
+  pg = createGraphics(width, height);
+  pg.beginDraw();
+  pg.background(0);
+  pg.endDraw();
+  
 }
 
 void draw() {
@@ -42,6 +48,7 @@ void draw() {
   stroke(0);
   strokeWeight(2);
  
+ image(pg, 0, 0);
   for (int i=1; i<axisX.length; i++) {
     axisX[i].draw(theta);
     axisX[i].drawVerticalLine(theta);
@@ -52,22 +59,29 @@ void draw() {
     axisY[j].drawHorinzontalLine(theta);
   }
   
+  pg.beginDraw();
+  pg.stroke(255);
   for (int j=0; j < axisY.length; j++) {
     for (int i=0; i < axisX.length; i++) {
       curves[j][i].addPoint(axisX[i].px, axisY[j].py);
-      curves[j][i].draw();
+      curves[j][i].draw(pg);
     }
   }
+  
+  pg.endDraw();
   
   theta += speed;
   if (theta >= 2*PI || theta<0) {
     //theta = 0;
     speed *= -1;
     
-    for (int j=0; j < axisY.length; j++) {
-    for (int i=0; i < axisX.length; i++) {
-      curves[j][i].reset();
-    }
-  }
+    //for (int j=0; j < axisY.length; j++) {
+    //  for (int i=0; i < axisX.length; i++) {
+    //    curves[j][i].reset();
+    //  }
+    //}
+    pg.beginDraw();
+    pg.background(0);
+    pg.endDraw();
   }
 }

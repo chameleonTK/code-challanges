@@ -9,8 +9,9 @@ Curve[][] curves;
 
 float speed = 0.01;
 float theta = 0;
+PGraphics pg;
 void setup() {
-  size(650, 650);
+  size(1050, 1050);
   
   axisX = new Circle[(int)(width/radious)];
   axisY = new Circle[(int)(width/radious)];
@@ -34,6 +35,11 @@ void setup() {
     }
   }
   
+  pg = createGraphics(width, height);
+  pg.beginDraw();
+  pg.background(0);
+  pg.endDraw();
+  
 }
 
 void draw() {
@@ -42,6 +48,7 @@ void draw() {
   stroke(0);
   strokeWeight(2);
  
+ image(pg, 0, 0);
   for (int i=1; i<axisX.length; i++) {
     axisX[i].draw(theta);
     axisX[i].drawVerticalLine(theta);
@@ -52,23 +59,30 @@ void draw() {
     axisY[j].drawHorinzontalLine(theta);
   }
   
+  pg.beginDraw();
+  pg.stroke(255);
   for (int j=0; j < axisY.length; j++) {
     for (int i=0; i < axisX.length; i++) {
       curves[j][i].addPoint(axisX[i].px, axisY[j].py);
-      curves[j][i].draw();
+      curves[j][i].draw(pg);
     }
   }
+  
+  pg.endDraw();
   
   theta += speed;
   if (theta >= 2*PI || theta<0) {
     //theta = 0;
     speed *= -1;
     
-    for (int j=0; j < axisY.length; j++) {
-    for (int i=0; i < axisX.length; i++) {
-      curves[j][i].reset();
-    }
-  }
+    //for (int j=0; j < axisY.length; j++) {
+    //  for (int i=0; i < axisX.length; i++) {
+    //    curves[j][i].reset();
+    //  }
+    //}
+    pg.beginDraw();
+    pg.background(0);
+    pg.endDraw();
   }
 }
 
@@ -128,31 +142,38 @@ class Circle{
 
 
 class Curve{
-  ArrayList<PVector> points;
+  //ArrayList<PVector> points;
   color c;
+  
+  PVector prev, curr;
   public Curve(float index) {
-    points = new ArrayList<PVector>();
-    
+    //points = new ArrayList<PVector>();
     this.c = color(index, 100, 100);
   }
   
   public void addPoint(float x, float y) {
-    points.add(new PVector(x, y));
+    prev = curr;
+    curr = new PVector(x, y);
   }
   
-  public void draw() {
-    stroke(c);
-    strokeWeight(2);
-    noFill();
-    beginShape();
-    for(PVector p:points) {
-      vertex(p.x, p.y);
+  public void draw(PGraphics pg) {
+    //stroke(c);
+    //strokeWeight(2);
+    //noFill();
+    //beginShape();
+    //for(PVector p:points) {
+    //  vertex(p.x, p.y);
+    //}
+    //endShape();
+    pg.stroke(c);
+    if (prev != null && curr != null) {
+      pg.line(prev.x, prev.y, curr.x, curr.y);
     }
-    endShape();
+    
   }
   
   public void reset() {
-    points.clear();
+    //points.clear();
   }
   
 
