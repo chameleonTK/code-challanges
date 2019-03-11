@@ -14,27 +14,184 @@
             height: 100%;
             text-align: center;
             font-family: 'Titillium Web', sans-serif;
-            background-color: #000;
-            color: #fff;
+            background-color: #fff;
+            color: #000;
+            margin-top: 20px;
+            margin-bottom: 20px;
         }
 
-        canvas {
-            width: 500px;
-            height: 500px;
+        .canvas {
+            width: 100%;
+            height: 100%;
+            margin: auto;
+        }
+
+        .desc{
+            text-align: left;
+            width: 60%;
+            max-width: 1000px;
+            margin: auto;
+            margin-bottom: 100px;
+            font-size: large;
+        }
+
+        .desc > .quote{
+            font-size: 22px;
+            width: 55%;
+            margin: auto;
         }
     </style>
 </head>
 <body>
-    <h2>PI Walk</h2>
+    <h2>Pi Walk by John Venn -1888</h2>
     <div>
         <p>Inspired by <a href="https://www.jeffreythompson.org/blog/2012/01/03/random-pi-walk/">@jeffthompson_</a> </p>
     </div>
+    <div class="canvas"></div>
+    <div class="desc">
+        <p>Pi as approximately 3.14 or 22/7 but now we all know that it is an irrational number, a number continues forever without any repeating pattern.</p>
+
+        <p class="quote">" We should also say that the longer we continued to produce such a line the more pronounced would these tendencies become. -- John Venn, The Logic of Chance, p.126 "</p>
+
+        <p>In 1888, John Venn, who also invented the Venn diagram, created this visual representation of  pi by drawing a walk; each step corresponding to the next digit of Pi. The number 0-9 is represented by the direction of the movement.  </p>
+
+        <p>One related question is that does it has a secret pattern in the walk? or do all sequences of possible digits is equally likely to appear here? It looks random but technically we still don’t sure that whether it is really random or not. <a href=”http://pi314.at/math/normal.html”>It still be a mathematical mystery.</a></p>
+
+    </div>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://d3js.org/d3.v5.js"></script>
+    <script src="https://d3js.org/d3-zoom.v1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.11/lodash.min.js"></script>
     <script>
-       d3.text("pi_digits.txt")
-       .then(function(data){
-           console.log(data)
+        var width = $(".canvas").width();
+        var height = $(".canvas").height();
+        var scale = 1;
+        d3.text("pi_digits.txt")
+        .then(function(data){
+            var digits = _.chunk(_.map(data, function(d){ 
+                return (+d); 
+            }), 10000)[0];
+            
+            var delayTime = 10;
+            var startPt = [0, 0];
+            var walks = _.map(digits, function(d, i) {
+                var theta = (d * Math.PI)/5;
+                var l = 50;
+                var dx = l * Math.cos(theta);
+                var dy = l * Math.sin(theta);
+                var nextPt = [startPt[0]+dx, startPt[1]+dy];
+                var line = [startPt[0], startPt[1], nextPt[0], nextPt[1]]
+                startPt = nextPt;
+                return {
+                    line: line,
+                    digit: d
+                };
+            });
+
+            var svg = d3.select(".canvas")
+                        .append("svg")
+                        .attr("width", "100%")
+                        .attr("height", "100%")
+            
+            var center = [0.5*width, 0.4*height];
+            var pane = svg.append('g')
+                        .style('transition', 'transform 1s;')
+                        .style('transform', 'translate('+parseInt(center[0])+'px, '+parseInt(center[1])+'px) scale(1)')
+            
+            // var limX = [-(center[0])*width, (1-center[0])*width]
+            // var limY = [-(center[1])*height, (1-center[1])*height]
+            var limX = [-0.5*width, 0.5*width]
+            var limY = [-0.4*height, 0.6*height]
+
+            var margin = 0;
+            var zoomScale = 1.0;
+            var xMax = 0;
+            var xMin = 0;
+
+            var point = pane
+                .append("circle")
+                .attr("cx", 0)
+                .attr("cy", 0)
+                .attr("r", 5)
+                .attr("stroke", 5)
+
+                var point = pane
+                .append("circle")
+                .attr("cx", 0)
+                .attr("cy", 0)
+                .attr("r", 5)
+                .attr("stroke", 5)
+            
+            function drawPoint(walks, index, wait) {
+                return _.delay(function(){
+                    // console.log(index, walks[index]);
+
+                    var d = walks[index];
+                    var c = d3.color("hsl("+d.digit*36+",50%,50%)");
+                    var c = d3.color("hsl(230, 50%, "+(d.digit*10)+"%)");
+                    // var c = d3.color("rgb(255, 255, 255)");
+
+                    var walkStep = pane
+                    .append("line")
+                    .attr("x1", d.line[0])
+                    .attr("y1", d.line[1])
+                    .attr("x2", d.line[2])
+                    .attr("y2", d.line[3])
+                    .attr("stroke-width", 2)
+                    .attr("stroke", c)
+
+                    var point = pane
+                    .append("circle")
+                    .attr("cx", d.line[2])
+                    .attr("cy", d.line[3])
+                    .attr("r", 2)
+                    .attr("stroke", c)
+
+                    if (index % 100 ==0) {
+                        console.log(index)
+                    }
+
+                    if (d.line[2] > xMax) {
+                        xMax = d.line[2]
+                    }
+
+                    if (d.line[2] < xMin) {
+                        xMin = d.line[2]
+                    }
+
+                    var scale = false;
+    
+                    if (d.line[2] < limX[0]+margin || d.line[2] > limX[1]-margin) {
+                        scale = true;
+                    }
+
+                    if (d.line[3] < limY[0]+margin || d.line[3] > limY[1]-margin) {
+                        scale = true;
+                    }
+
+                    if (scale) {
+                        zoomScale *= 0.9
+                        // var w = (xMax - xMin)/zoomScale;
+                        var w = "50%"
+                        pane.style("transform", "scale("+zoomScale+") translate("+w+", 40%)")
+
+                        limX = [-0.5*width/zoomScale, 0.5*width/zoomScale]
+                        limY = [-0.4*height/zoomScale, 0.6*height/zoomScale]
+                    }
+
+                    if (index+1 < walks.length) {
+                        drawPoint(walks, index+1, delayTime);
+                    } else {
+                        console.log("DONE")
+                    }
+
+                    
+
+                    
+                }, wait);
+            }
+
+            drawPoint(walks, 0, 0);
        })
         
     </script>
