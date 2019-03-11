@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Code Challanges #4 PI Walk</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Titillium+Web" rel="stylesheet">
+    
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            font-family: 'Titillium Web', sans-serif;
+            background-color: #000;
+            color: #fff;
+        }
+
+        canvas {
+            width: 500px;
+            height: 500px;
+        }
+    </style>
+</head>
+<body>
+    <h2>PI Walk</h2>
+    <div>
+        <p>Inspired by <a href="https://www.jeffreythompson.org/blog/2012/01/03/random-pi-walk/">@jeffthompson_</a> </p>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://d3js.org/d3.v5.js"></script>
+    <script>
+       d3.text("pi_digits.txt")
+       .then(function(data){
+           console.log(data)
+       })
+        
+    </script>
+</body>
+</html>
