@@ -10,20 +10,24 @@
     
     <style>
         html, body {
-            width: 100%;
-            height: 100%;
+            /* width: 100%;
+            height: 100%; */
             text-align: center;
             font-family: 'Titillium Web', sans-serif;
             background-color: #fff;
             color: #000;
+        }
+
+        body {
             margin-top: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 100px;
         }
 
         .canvas {
             width: 100%;
             height: 100%;
             margin: auto;
+            /* margin: 100px auto; */
         }
 
         .desc{
@@ -31,7 +35,6 @@
             width: 60%;
             max-width: 1000px;
             margin: auto;
-            margin-bottom: 100px;
             font-size: large;
         }
 
@@ -39,6 +42,7 @@
             font-size: 22px;
             width: 55%;
             margin: auto;
+            margin-bottom: 15px;
         }
     </style>
 </head>
@@ -58,22 +62,45 @@
         <p>One related question is that does it has a secret pattern in the walk? or do all sequences of possible digits is equally likely to appear here? It looks random but technically we still don’t sure that whether it is really random or not. <a href=”http://pi314.at/math/normal.html”>It still be a mathematical mystery.</a></p>
 
     </div>
+
+    <div class="desc">
+        <h3>What I leaned</h3>
+        <ul>
+            <li>Working with <a href="https://d3js.org/">d3.js</a></li>
+            <li>Learn how to manually scale ans translate with a fixed centriod</li>
+            <li>Happy PI day 2019; 3.14.2019</li>
+        </ul>
+    </div>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://d3js.org/d3.v5.js"></script>
     <script src="https://d3js.org/d3-zoom.v1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.11/lodash.min.js"></script>
     <script>
-        var width = $(".canvas").width();
-        var height = $(".canvas").height();
+        var width = $(window).width()-10;
+        var height = $(window).height()-10;
         var scale = 1;
+
+        var maxX = (0.5)*width, minX = (-0.5)*width;
+        var maxY = (0.5)*height, minY = (-0.5)*height;
+        var delayTime = 100;
+
+        function getCentroid() {
+            return [minX + (maxX-minX)/2, minY + (maxY-minY)/2];
+        }
+
+        function getTranslation() {
+            var center = getCentroid();
+            var tpos = [parseInt(width*0.5/scale - center[0]), parseInt(height*0.5/scale - center[1])];
+            return "scale("+scale+") translate("+tpos[0]+"px, "+tpos[1]+"px)";
+        }
+
         d3.text("pi_digits.txt")
         .then(function(data){
             var digits = _.chunk(_.map(data, function(d){ 
                 return (+d); 
             }), 10000)[0];
             
-            var delayTime = 10;
-            var startPt = [0, 0];
+            var startPt = getCentroid();
             var walks = _.map(digits, function(d, i) {
                 var theta = (d * Math.PI)/5;
                 var l = 50;
@@ -90,41 +117,15 @@
 
             var svg = d3.select(".canvas")
                         .append("svg")
-                        .attr("width", "100%")
-                        .attr("height", "100%")
-            
-            var center = [0.5*width, 0.4*height];
+                        .attr("width", width)
+                        .attr("height", height)
+
             var pane = svg.append('g')
                         .style('transition', 'transform 1s;')
-                        .style('transform', 'translate('+parseInt(center[0])+'px, '+parseInt(center[1])+'px) scale(1)')
-            
-            // var limX = [-(center[0])*width, (1-center[0])*width]
-            // var limY = [-(center[1])*height, (1-center[1])*height]
-            var limX = [-0.5*width, 0.5*width]
-            var limY = [-0.4*height, 0.6*height]
-
-            var margin = 0;
-            var zoomScale = 1.0;
-            var xMax = 0;
-            var xMin = 0;
-
-            var point = pane
-                .append("circle")
-                .attr("cx", 0)
-                .attr("cy", 0)
-                .attr("r", 5)
-                .attr("stroke", 5)
-
-                var point = pane
-                .append("circle")
-                .attr("cx", 0)
-                .attr("cy", 0)
-                .attr("r", 5)
-                .attr("stroke", 5)
+                        .style('transform', getTranslation())
             
             function drawPoint(walks, index, wait) {
                 return _.delay(function(){
-                    // console.log(index, walks[index]);
 
                     var d = walks[index];
                     var c = d3.color("hsl("+d.digit*36+",50%,50%)");
@@ -151,32 +152,57 @@
                         console.log(index)
                     }
 
-                    if (d.line[2] > xMax) {
-                        xMax = d.line[2]
+                    var outOfBound = false;
+                    if (d.line[2] < minX) {
+                        outOfBound = true;   
                     }
 
-                    if (d.line[2] < xMin) {
-                        xMin = d.line[2]
+                    if (d.line[2] > maxX) {
+                        outOfBound = true;
                     }
 
-                    var scale = false;
-    
-                    if (d.line[2] < limX[0]+margin || d.line[2] > limX[1]-margin) {
-                        scale = true;
+                    if (d.line[3] < minY) {
+                        outOfBound = true;   
                     }
 
-                    if (d.line[3] < limY[0]+margin || d.line[3] > limY[1]-margin) {
-                        scale = true;
+                    if (d.line[3] > maxY) {
+                        outOfBound = true;
                     }
 
-                    if (scale) {
-                        zoomScale *= 0.9
-                        // var w = (xMax - xMin)/zoomScale;
-                        var w = "50%"
-                        pane.style("transform", "scale("+zoomScale+") translate("+w+", 40%)")
+                    
 
-                        limX = [-0.5*width/zoomScale, 0.5*width/zoomScale]
-                        limY = [-0.4*height/zoomScale, 0.6*height/zoomScale]
+                    if (outOfBound) {
+                        // scale *= 0.9
+
+                        if (d.line[2] < minX) {
+                            minX = d.line[2] - 100
+                        }
+
+                        if (d.line[2] > maxX) {
+                            maxX = d.line[2] + 100
+                        }
+
+                        if (d.line[3] < minY) {
+                            minY = d.line[3] - 100
+                        }
+
+                        if (d.line[3] > maxY) {
+                            maxY = d.line[3] + 100
+                        }
+
+                        var rangeX = maxX - minX;
+                        var rangeY = maxY - minY;
+
+                        console.log(rangeX, width/scale)
+                        while (rangeX > width/scale) {
+                            scale *= 0.9
+                        }
+
+                        while (rangeY > height/scale) {
+                            scale *= 0.9
+                        }
+
+                        pane.style("transform", getTranslation())
                     }
 
                     if (index+1 < walks.length) {
