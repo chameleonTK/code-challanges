@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Code Challanges #5 Image Evolution</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Titillium+Web" rel="stylesheet">
+    
+    <style>
+        html, body {
+            /* width: 100%;
+            height: 100%; */
+            text-align: center;
+            font-family: 'Titillium Web', sans-serif;
+            background-color: #fff;
+            color: #000;
+        }
+
+        body {
+            margin-top: 20px;
+            margin-bottom: 100px;
+        }
+
+        .container {
+            text-align: center;
+        }
+        .container > .image {
+            width: 48%;
+            display: inline-block;
+        }
+
+        .container > .image > canvas{
+            width: 80%;
+            margin: 100px 0px;
+        }
+
+        .desc{
+            text-align: left;
+            width: 60%;
+            max-width: 1000px;
+            margin: auto;
+            font-size: large;
+        }
+
+        .desc > .quote{
+            font-size: 22px;
+            width: 55%;
+            margin: auto;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h2> Image Evolution by genetic programming</h2>
+    <div>
+        <p>Inspired by <a href="https://alteredqualia.com/visualization/evolve/">@alteredq</a> </p>
+    </div>
+
+    <div class="container">
+        <div class="image">
+            <canvas id="image_input"> </canvas>
+        </div>
+        <div class="image">
+            <canvas id="image_output" style="border: 1px solid #444444;"></canvas>
+        </div>
+    </div>
+    
+    <div class="desc">
+        <h3>What is it?</h3>
+        <p>Task here is using a simulated annealing approach to draw an image by overlapping many primitive polygons of various colors. </p>
+        <p>The implementation; starting with a random N polygons; It, then, randomly modifies one parameter at a time and calculates how close it is to the original. Lastly, if it looks closer to the original, it will accept the change and repeat the whole process again. </p>
+        
+        <p>To determine how close it is to the origin, it computes sum of pixel-by-pixel differences as a fitness value. Lower differences, Closer it is</p>
+        
+        <p>This technique can be seen as genetic programming. A random N polygons is represented by a random DNA string. The changing can be formulated as gene mutation process. The goal is to survive under a condition that DNA that produces a closer image is likely to survive more</p>
+
+        <p> Original idea: <a href="https://rogerjohansson.blog/2008/12/07/genetic-programming-evolution-of-mona-lisa/">Genetic Programming: Evolution of Mona Lisa</a> by <a href="https://twitter.com/RogerAlsing">@RogerAlsing</a> </p>
+        
+
+    </div>
+    <div class="desc">
+        <!-- <p class="quote">" "</p> -->
+
+    </div>
+
+    <div class="desc">
+        <h3>What I leaned</h3>
+        <ul>
+            <li>Implement Genetic programming</a></li>
+        </ul>
+    </div>
+
+    <div class="desc">
+            <h3>TODO</h3>
+            <ul>
+                <li>Implement Gaussian mutation <a href="https://github.com/alteredq/evolve">example</a></li>
+                <li>Study other's implementation <a href="https://github.com/ynd/genetic-drawing/tree/master/src/gd">here</a></li>
+            </ul>
+        </div>
+
+    
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.11/lodash.min.js"></script>
+
+    <script src="Gene.js"></script>
+    <script src="ImageEvolution.js"></script>
+    <script>
+        var conf = {
+            maxNumberOfPolygons: 500,
+            maxNumberOfVertices: 6,
+            initialPolys: 100 
+        };
+
+        var env = {
+            canvasInput: document.getElementById('image_input'),
+            canvasOutput: document.getElementById('image_output'),
+        }
+        
+        function init() {
+            image = new Image();
+            image.onload = function() {
+                if(image.complete) {
+                    initCanvas(image);
+                }
+                else {
+                    setTimeout(function() {
+                        initCanvas(image)
+                    }, 100);
+                }
+            }
+            image.src = "img/cat.jpg";
+        }
+
+        function initCanvas(image) {
+            env.contextInput = env.canvasInput.getContext('2d');
+            env.contextOutput = env.canvasOutput.getContext('2d');
+
+    
+            var width = Math.min(image.width, env.canvasInput.width)
+            console.log(image.width, env.canvasInput.width)
+            var height = Math.floor((width * image.height)/ image.width);
+
+            env.width = width;
+            env.height = height;
+            env.depth = 4;
+            env.subpixels = width * height * env.depth;
+            env.normCoef = width * height * 3 * 255;
+
+            env.canvasInput.setAttribute('width',width);
+            env.canvasInput.setAttribute('height',height);
+
+            env.canvasOutput.setAttribute('width',width);
+            env.canvasOutput.setAttribute('height',height);
+
+            // draw the image onto the canvas
+            env.contextInput.drawImage(image, 0, 0, width, height);
+            env.dataInput = env.contextInput.getImageData(0, 0, width, height).data;
+
+            env.stepTotal = 0;
+            env.fitness = Number.MAX_SAFE_INTEGER;
+            env.elapsedTime = 0;
+            env.mutsec = 0;
+            env.countBenefit = 0;
+            var evo = new ImageEvolution(conf);
+            evo.run(env);
+        }
+
+        
+        init();
+
+    </script>
+</body>
+</html>
