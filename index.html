@@ -1,40 +1,123 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Code Challanges</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <link href="https://fonts.googleapis.com/css?family=Titillium+Web" rel="stylesheet">
-    
-    <style>
-        html, body {
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            font-family: 'Titillium Web', sans-serif;
-            background-color: #fff;
-            color: #000;
-        }
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="icon" href="img/favicon.png" type="image/png">
+        <title>Code Challanges</title>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="../css/bootstrap.css">
+        <link rel="stylesheet" href="../vendors/linericon/style.css">
+        <link rel="stylesheet" href="../css/font-awesome.min.css">
+        <link rel="stylesheet" href="../vendors/owl-carousel/owl.carousel.min.css">
+        <link rel="stylesheet" href="../vendors/lightbox/simpleLightbox.css">
+        <link rel="stylesheet" href="../vendors/nice-select/css/nice-select.css">
+        <link rel="stylesheet" href="../vendors/animate-css/animate.css">
+        <link rel="stylesheet" href="../vendors/flaticon/flaticon.css">
+        <!-- main css -->
+        <link rel="stylesheet" href="../css/style.css">
+        <link rel="stylesheet" href="../css/responsive.css">
 
-        h1{
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            margin-top: -100px;
-            margin-left: -100px;
-        }
-    </style>
-</head>
-<body>
-    <h1>#CodeChallanges</h1>
-   
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <link href="https://fonts.googleapis.com/css?family=Titillium+Web" rel="stylesheet">
 
-    <script>
-      
+        <style>
+            html, body {
+                font-family: 'Titillium Web', sans-serif;
+                /* background-color: #fff;
+                color: #000; */
+            }
+
+            h2{
+                font-family: 'Titillium Web' !important;
+                font-weight: normal !important;
+                text-transform: none !important;
+            }
+        </style>
+    </head>
+    <body>
         
-    </script>
-</body>
+        <section class="projects_area p_120">
+            <div class="container">
+                <div class="main_title">
+                    <h2>#CodeChallanges</h2>
+                    <p>It is a tiny project that I aims to implement a side-project and do a short video about it in weekly basis</p>
+                </div>
+                <!-- <div class="projects_fillter">
+                    <ul class="filter list">
+                        <li class="active" data-filter="*"><a href="#">All Categories</a></li>
+                        <li data-filter=".brand"><a href="#">Branding</a></li>
+                        <li data-filter=".work"><a href="#">Creative Work </a></li>
+                        <li data-filter=".web"><a href="#">Web Design</a></li>
+                    </ul>
+                </div> -->
+                <div class="projects_inner row">
+                    <div class="col-lg-4 col-sm-6 brand web">
+                        <div class="projects_item">
+                            <img class="img-fluid" src="../img/projects/projects-1.jpg" alt="">
+                            <div class="projects_text">
+                                <a href="./week1_double_pandulum"><h4>Double Pendulum</h4></a>
+                                <p>Week1</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-sm-6 brand work">
+                        <div class="projects_item">
+                            <img class="img-fluid" src="../img/projects/projects-2.jpg" alt="">
+                            <div class="projects_text">
+                                <a href="./week2_lissajous_curve_table"><h4>Lissajous Curve Table</h4></a>
+                                <p>Week2</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-sm-6 work">
+                        <div class="projects_item">
+                            <img class="img-fluid" src="../img/projects/projects-3.jpg" alt="">
+                            <div class="projects_text">
+                                <a href="./week3_maze_generator"><h4>Maze Generator</h4></a>
+                                <p>Week3</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-sm-6 brand web">
+                        <div class="projects_item">
+                            <img class="img-fluid" src="../img/projects/projects-4.jpg" alt="">
+                            <div class="projects_text">
+                                <a href="./week4_pi_walk/"><h4>PI Walk</h4></a>
+                                <p>Week4</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-sm-6 brand work">
+                        <div class="projects_item">
+                            <img class="img-fluid" src="../img/projects/projects-5.jpg" alt="">
+                            <div class="projects_text">
+                                <a href="./week5_image_evolution"><h4>Image Evolution</h4></a>
+                                <p>Week5</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        
+        
+        
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="../js/jquery-3.2.1.min.js"></script>
+        <script src="../js/popper.js"></script>
+        <script src="../js/bootstrap.min.js"></script>
+        <script src="../js/stellar.js"></script>
+        <script src="../vendors/lightbox/simpleLightbox.min.js"></script>
+        <script src="../vendors/nice-select/js/jquery.nice-select.min.js"></script>
+        <script src="../vendors/isotope/imagesloaded.pkgd.min.js"></script>
+        <script src="../vendors/isotope/isotope-min.js"></script>
+        <script src="../vendors/owl-carousel/owl.carousel.min.js"></script>
+        <script src="../js/jquery.ajaxchimp.min.js"></script>
+        
+        <!--gmaps Js-->
+        <script src="../js/theme.js"></script>
+    </body>
 </html>
