@@ -62,7 +62,7 @@
 
         <p class="quote">" We should also say that the longer we continued to produce such a line the more pronounced would these tendencies become. -- John Venn, The Logic of Chance, p.126 "</p>
 
-        <p>One related question is that does it has a secret pattern in the walk? or do all sequences of possible digits is equally likely to appear here? It looks random but technically we still don’t sure that whether it is really random or not. <a href=”http://pi314.at/math/normal.html”>It still be a mathematical mystery.</a></p>
+        <p>One related question is that does it has a secret pattern in the walk? or do all sequences of possible digits is equally likely to appear here? It looks random but technically we still don’t sure that whether it is really random or not. <a href="http://pi314.at/math/normal.html">It still be a mathematical mystery.</a></p>
 
     </div>
 
@@ -104,6 +104,8 @@
             }), 10000)[0];
             
             var startPt = getCentroid();
+            // console.log(startPt)
+            startPt = [0, -500]
             var walks = _.map(digits, function(d, i) {
                 var theta = (d * Math.PI)/5;
                 var l = 50;

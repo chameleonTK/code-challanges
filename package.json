@@ -1,0 +1,26 @@
+{
+  "name": "code-challanges",
+  "version": "1.0.0",
+  "description": "Just a tiny project that I did as a side-project and do a short video about it in weekly basis",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chameleonTK/code-challanges.git"
+  },
+  "author": "Pakawat Nakwijit",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chameleonTK/code-challanges/issues"
+  },
+  "homepage": "https://github.com/chameleonTK/code-challanges#readme",
+  "devDependencies": {
+    "ecstatic": "^4.1.4",
+    "gulp": "^3.9.1",
+    "gulp-util": "^3.0.7",
+    "gulp-watch": "^4.3.11",
+    "http": "0.0.0"
+  }
+}
