@@ -11,7 +11,7 @@ float W = 20;
 DoublePendulum[] dp = new DoublePendulum[20];
 
 void setup() {
-  size(600, 600);
+  size(600, 400);
   
   cx = width/2;
   cy = 100;

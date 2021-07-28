@@ -7,53 +7,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=Titillium+Web" rel="stylesheet">
+    <link rel="stylesheet" href="../src/css/projects.css">
     <script src="processing.js"></script>
-    <style>
-        html, body {
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            font-family: 'Titillium Web', sans-serif;
-        }
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css" integrity="sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn" crossorigin="anonymous">
 
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js" integrity="sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8" crossorigin="anonymous"></script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js" integrity="sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl" crossorigin="anonymous"></script>
+    <style>
         canvas {
             width: 600px;
-            height: 600px;
+            height: 400px;
         }
     </style>
 </head>
 <body>
-    <h1>Chaotic movement with double pendulum</h1>
+    <h1>Chaotic movement with Double Pendulum</h1>
+    <p>Inspired by <a href="https://www.youtube.com/watch?v=d0Z8wLLPNE0">Think Twice</a> </p>
     <!-- <h4>What is the pattern here?</h4> -->
     <!-- <button id="btn" style="display: block;margin: auto;margin-top: 20px;" class="btn btn-default" type="button" >Reveal the pattern</button> -->
     <canvas id="sketch" data-processing-sources="sketch.pde"></canvas>
-    <div>
-        <p>Inspired by <a href="https://www.youtube.com/watch?v=d0Z8wLLPNE0">Think Twice</a> </p>
-        <p>
-            <p><a href="https://www.myphysicslab.com/pendulum/double-pendulum-en.html">Double pendulum formular </a> </p>
-            <p><a href="https://www.myphysicslab.com/explain/runge-kutta-en.html">Runge-Kutta Algorithm</a> </p>
+    <div class="desc">
+        <h3>What is it?</h3>
+        <p>It is a simulation of a double pendulum where two mass are attached with each other in swing motion. It is interesting because when there is only one mass (a single pendulum), the motion of the system is well-predicted as it is just swing back and forth. However, when another mass is attached, it exhibits chaotic motions where a tiny change in the initial setting will dramatically change the overall motion.
         </p>
+        <p>
+            Please see <a href="https://www.myphysicslab.com/pendulum/double-pendulum-en.html">Double Pendulum by Erik Neumann</a> for more detail.
+
+        </p>
+
     </div>
+    <div class="desc">
+        <h3>What I learn</h3>
+        It is my first time implementing a physics simulation. At first, I thought it should be straightforward as I already have formulas describing position, velocity and acceleration.
+
+        Here is my simple pseudocode
+        
+        <code><pre>
+    for each step t: 
+        v = v + at
+        x = x + vt</pre></code>
+        
+        I found out later that the way I implemented is called `Euler's Method`. It is a numerical method to determine values in a differential equation system. 
+        
+        <br><br>
+        <p>
+            After playing around for a while, I observed strange behaviour as it was also reported <a href="        https://github.com/CodingTrain/website/issues/533">here</a>. It seems that the Euler's method works just fine when `t` is very small and the equations are quite simple. Because it "does not take into account the curvature of the solution, so it tends to give different results depending on the step size" <a href="https://scicomp.stackexchange.com/questions/20172/why-are-runge-kutta-and-eulers-method-so-different">[1]</a>. A better solution to this issue is to implement <a href="https://www.myphysicslab.com/explain/runge-kutta-en.html">Runge-Kutta Method</a>. Aim of the method is similar to the Euler's but it takes into account the curvature so it results in a significantly accurate motion.
+        </p>
+        
+        <p>
+            Even though I didn't fully understand how Runge-Kutta Method works, but my pendulum seems to run smoothly without the strange behaviour.
+        </p>
+
+        <p>Open world to the Physics Simulation.</p>
+
+    </div>
+    <div style="padding-bottom: 50px;"></div>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 
     <script>
         $(document).ready(function(){
             var show = true;
             var processingInstance;
-            showLine();
-            function showLine() {
-                if (!processingInstance) {
-                    processingInstance = Processing.getInstanceById('sketch');
-                }
+            // showLine();
+            // function showLine() {
+            //     if (!processingInstance) {
+            //         processingInstance = Processing.getInstanceById('sketch');
+            //     }
 
-                show = !show;
-                if (show) {
-                    processingInstance.showLine();
-                } else {
-                    processingInstance.noLine();
-                }
+            //     show = !show;
+            //     if (show) {
+            //         processingInstance.showLine();
+            //     } else {
+            //         processingInstance.noLine();
+            //     }
+            // }
+            // $("#btn").click(showLine);
+
+            var math = document.getElementsByClassName('math');
+            for (var i = 0; i < math.length; i++) {
+                katex.render(math[i].textContent, math[i]);
             }
-            $("#btn").click(showLine);
         })
         
     </script>

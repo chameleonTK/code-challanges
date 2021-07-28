@@ -7,7 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=Titillium+Web" rel="stylesheet">
-    <script src="processing.js"></script>
+    <link rel="stylesheet" href="../src/css/projects.css">
+    
     <style>
         html, body {
             width: 100%;
@@ -26,20 +27,169 @@
 </head>
 <body>
     <h1>Maze Generator</h1>
-    <h4>I have a little problem to run this processing sketch</h4>
-    <h4>I will find another way to do it later</h4>
-    <canvas id="sketch" data-processing-sources="sketch.pde"></canvas>
-    
     <div>
         <p>Inspired by <a href="http://weblog.jamisbuck.org/under-the-hood/">@jamis</a> </p>
     </div>
+
+    <div class="canvas"></div>
+    <div>
+        <button class="btn" onclick="useKruskal();draw(0);">Kruskal</button>
+        <button class="btn" onclick="useEller();draw(0);">Eller</button>
+        <button class="btn" onclick="usePrim();draw(0);">Prim</button>
+        <button class="btn" onclick="useWilson();draw(0);">Wilson</button>
+    </div>
+    
+    <div style="padding-bottom: 20px;"></div>
+
+    <div class="desc">
+        <h3>What is it?</h3>
+        <p>
+            I really want to learn about maze generator for a long time. This week, I found a really good resouce by Jamis Buck. In his blog, I was surprised that maze generator could be formulated as generating Minimum Spanning Tree (MST) from a graph.
+        </p>
+        <p>
+            Here I implemented 4 basic maze generator: Kruskal Method, Eller Method, Prim Method, and Wilson Method.
+        </p>
+        <p>
+            <b>Kruskal Method</b>: it is the simplest one. The main idea is to randomly select a pair of adjacent tiles. Check whether they are connected, if not, conntect them. Repeat the process until all tiles are conntected. 
+        </p>
+
+        <p>
+            <b>Eller Method</b>: it runs like a printer. It runs from left to right and from top to bottom. At each step, it randomly removed the border with some conditions to make sure that all cells are connected.
+        </p>
+
+        <p>
+            <b>Prim Method</b>: it is my favorite. It is like BFS. It randomly picks one cell as an initial point then it tranverses from that point to the rest of the map.
+        </p>
+
+        <p>
+            <b>Wilson Method</b>: Similar to Prim but, this time, it is DFS. To generate a path, it will randomly tranverses until it reaches a target. Becase it randomly moves from one tile to another, it might take really long time to reach the first target. 
+        </p>
+
+    </div>
+    <div class="desc">
+        
+
+    </div>
+
+    <div class="desc">
+        <h3>What I leaned</h3>
+        <ul>
+            <li>Data structures: set, queue, priority queue, stack, and heap</li>
+        </ul>
+    </div>
+
+    <div style="padding-bottom: 50px;"></div>
+
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://d3js.org/d3.v5.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.11/lodash.min.js"></script>
+    <script src="https://unpkg.com/tinyqueue@2.0.0/tinyqueue.min.js"></script>
 
     <script>
-        $(document).ready(function(){
-            
-        })
+        Direction = {
+            "VERTICAL": 1,
+            "HORIZONTAL": 2,
+            "UP": 3,
+            "DOWN": 4,
+            "LEFT": 5,
+            "RIGHT": 6
+        }
+    </script>
+    <script src="Cell.js"></script>
+    <script src="KruskalMethod.js"></script>
+    <script src="EllerMethod.js"></script>
+    <script src="PrimMethod.js"></script>
+    <script src="WilsonMethod.js"></script>
+
+    <script>
+        var width = $(window).width()-10;
+        var height = $(window).height()-10;
+        width = Math.min(width, height);
+        height = width;
+
+        var scale = 1;
+
+        var delayTime = 100;
+
+        var svg = d3.select(".canvas")
+                    .append("svg")
+                    .attr("width", width)
+                    .attr("height", height)
+
+        let cells = [];
+        let n = 10;
+        let offset = 50;
+        let generator;
+        let kruskal, wilson, eller, prim;
+
+
+        let size = Math.min((width-offset)/n, (height-offset)/n);
+  
+        for (let i=0; i<n; i++) {
+            row = [];
+            for (let j=0; j<n; j++) {
+                let o = new Cell(i*n + j, i, j, size, offset);
+                o.draw(svg)
+
+                row.push(o)
+            }
+            cells.push(row)
+        }
+
+        kruskal = new KruskalMethod(cells);
+        wilson = new WilsonMethod(cells);
+        eller = new EllerMethod(cells);
+        prim = new PrimMethod(cells);
+        generator = kruskal;
+        useKruskal();
         
+        function useKruskal() {
+            generator.reset();
+            generator = kruskal;
+            generator.reset();
+        }
+
+        function useWilson() {
+          generator.reset();
+          generator = wilson;
+          generator.reset();
+        }
+
+        function useEller() {
+          generator.reset();
+          generator = eller;
+          generator.reset();
+        }
+
+        function usePrim() {
+          generator.reset();
+          generator = prim;
+          generator.reset();
+        }
+
+        var cnt = 0
+        function draw(wait) {
+            return _.delay(function(){
+                let ongoing = generator.run();
+                for (let i=0; i<n; i++) {
+                    for (let j=0; j<n; j++) {
+                        let o = cells[i][j]
+                        o.repaint()
+                    }
+                }
+
+                cnt += 1;
+                // if (cnt < 10) {
+                    if (ongoing) {
+                        draw(delayTime);
+                    }
+                // }
+                
+                
+            }, wait);
+        }
+
+        draw(0);
     </script>
 </body>
 </html>
