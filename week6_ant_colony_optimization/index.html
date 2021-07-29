@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Code Challanges #6 Ant Colony Optimization</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Titillium+Web" rel="stylesheet">
+    <link rel="stylesheet" href="../src/css/projects.css">
+    <style>
+        body {
+            margin-top: 20px;
+            margin-bottom: 100px;
+        }
+    </style>
+</head>
+<body>
+    <h2> Ant Colony Optimization</h2>
+    <h3>in Travelling salesman problem</h3>
+    <div>
+        <p>Inspired by <a href="https://www.youtube.com/watch?v=oXb2nC-e_EA">@LearnbyExample</a> </p>
+    </div>
+
+    <div class="canvas"></div>
+    
+    <div>
+        <h4>Shortest Path: <span id="best_dist">???</span></h4>
+    </div>
+    <div style="padding-bottom: 20px;"></div>
+    <div class="desc">
+        <h3>What is it?</h3>
+        <p>Ant is a very intriguing animal. Because they live as a colony so they must be working together and sharing information with others. The latter, in my opinion, makes the ant stronger than other insects. Researchers found that pheromone is the key element here. An ant can leave pheromone in a food source to let others know the food location. Genious computer science people observe this behaviour and develop a new optimizing algorithm called "Ant Colony Optimization".</p>
+
+        <p>The main idea of this technique uses pheromone to increase the probability of selected a particular pathway. More ants successfully crossed a direction, more pheromone they leave on that path and more likely a new ant will repeat the same direction. In the end, it will result in the optimal route between each point.</p>
+
+    </div>
+
+    <div class="desc">
+    </div>
+
+    <div style="padding-bottom: 50px;"></div>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://d3js.org/d3.v5.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.11/lodash.min.js"></script>
+    <script src="ACO.js"></script>
+    <script src="Ant.js"></script>
+
+    <script>
+        var width = $(window).width()-10;
+        var height = $(window).height()-10;
+        var offset = 100;
+        var scale = 1;
+        var delayTime = 100;
+
+        var svg = d3.select(".canvas")
+                    .append("svg")
+                    .attr("width", width)
+                    .attr("height", height)
+
+        // function drawOnClick() {
+        //     svg.on('click', function(d,i){ 
+        //         step();
+        //     });
+        // }
+
+        var num_nodes = 10;
+        var node_radius = 10;
+    
+        var nodes = []
+        var edges = []
+
+        var ant_walks_per_update = 1000
+        var walk_time = delayTime/ant_walks_per_update;
+
+        var ant_factory = new AntFactory(svg, ant_walks_per_update);
+        var aco = new AntColonyOptimizer(ant_factory);
+        
+
+        function init() {
+            nodes = []
+            edges = []
+
+            let n = num_nodes;
+            for(let i=0; i<n; i++) {
+                let x = Math.random()*(width-offset) + offset/2;
+                let y = Math.random()*(height-offset) + offset/2;
+                let r = node_radius;
+
+                let node = svg.append("circle")
+                        .style("stroke", "gray")
+                        .style("fill", "black")
+                        .attr("r", r)
+                        .attr("cx", x)
+                        .attr("cy", y);
+
+                nodes.push({
+                    "x": x,
+                    "y": y,
+                    "r": r,
+                    "n": node
+                })
+            }
+
+            for(let i=0; i<n; i++) {
+                for(let j=i+1; j<n; j++) {
+
+                    let e = svg.append("line")
+                            .attr("x1", nodes[i].x)
+                            .attr("y1", nodes[i].y)
+                            .attr("x2", nodes[j].x)
+                            .attr("y2", nodes[j].y)
+                            .attr("stroke-width", 1)
+                            .attr("stroke", "rgba(0, 0, 0, 1)")
+
+                    edges.push({
+                        "s": i,
+                        "t": j,
+                        "e": e,
+                        "w": 1
+                    })
+                }
+            }
+
+            aco.init(nodes)
+            ant_factory.init(nodes)
+
+        }
+
+        
+        function renderAnt(cc, callback) {
+            return _.delay(function(){
+                ant_factory.render();
+
+                if (cc < ant_walks_per_update) {
+                    return renderAnt(cc+1, callback)
+                }
+
+                console.log("called", cc)
+                callback()
+                return true;
+            }, walk_time);
+        }
+
+        function draw(wait) {
+            best_len = aco.run()
+            $("#best_dist").html(best_len)
+            repaintWeights()    
+            // ant_factory.render()
+            step()
+        }
+        
+        function step() {
+            renderAnt(0, function() {
+                best_len = aco.run()
+                $("#best_dist").html(best_len)
+                repaintWeights()    
+                step()
+            })
+        }
+
+        
+        function repaintWeights() {
+            let maxweight = 0
+            let weights = aco.weights
+
+            _.each(edges, function(e) {
+                maxweight = Math.max(weights[e.s][e.t], maxweight)
+            })
+
+            _.each(edges, function(e) {
+                let op = weights[e.s][e.t]/maxweight
+                e.e.attr("stroke", "rgba(0, 0, 0, "+op+")")
+            })
+        }
+        
+        init()
+        draw(0);
+        // drawOnClick();
+    </script>
+
+</body>
+</html>
