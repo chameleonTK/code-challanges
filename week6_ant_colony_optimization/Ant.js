@@ -9,28 +9,39 @@ class AntFactory{
         this.nodes = nodes;
     }
 
-    new_ant(path) {
+    new_ant(path, dist) {
+        
         let n = this.nodes[path[0]];
         let x = n.x;
         let y = n.y;
-        this.ants.push(new Ant(x, y, path, this.steps, this.nodes, this.svg))
+        this.ants.push(new Ant(x, y, path, this.steps, this.nodes, this.svg, dist))
     }
 
-    render() {
+    move(callback) {
         _.each(this.ants, function(a) {
-            a.move();
+            a.move(callback);
+        })
+    }
+
+    clear_ants() {
+        _.remove(this.ants, function(a) {
+            return a.end;
         })
     }
 }
 
 class Ant{
-    constructor(x, y, path, steps, nodes, svg) {
+    constructor(x, y, path, steps, nodes, svg, dist) {
         this.x = x;
         this.y = y;
 
+        this.path = path;
+        this.dist = dist;
         this.idx = 0
         let n = path.length;
         // let d = Math.floor(steps/n);
+
+        this.end = false;
 
         let points = [
             [x, y]
@@ -83,11 +94,13 @@ class Ant{
 
     }
 
-    move() {
+    move(callback) {
         
         this.idx += 1
         if (this.idx >= this.points.length) {
             this.a.remove();
+            this.end = true;
+            callback(this);
             return;
         }
 

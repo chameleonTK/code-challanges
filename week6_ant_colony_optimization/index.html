@@ -52,7 +52,7 @@
         var height = $(window).height()-10;
         var offset = 100;
         var scale = 1;
-        var delayTime = 100;
+        
 
         var svg = d3.select(".canvas")
                     .append("svg")
@@ -65,17 +65,17 @@
         //     });
         // }
 
-        var num_nodes = 10;
+        var num_nodes = 50;
         var node_radius = 10;
     
         var nodes = []
         var edges = []
 
-        var ant_walks_per_update = 1000
-        var walk_time = delayTime/ant_walks_per_update;
-
+        var delayTime = 0.1;
+        var ant_walks_per_update = 100
+        // var walk_time = delayTime/ant_walks_per_update;
         var ant_factory = new AntFactory(svg, ant_walks_per_update);
-        var aco = new AntColonyOptimizer(ant_factory);
+        var aco = new AntColonyOptimizer(ant_factory, 100);
         
 
         function init() {
@@ -123,42 +123,35 @@
                 }
             }
 
-            aco.init(nodes)
             ant_factory.init(nodes)
+            aco.init(nodes)
 
         }
 
-        
-        function renderAnt(cc, callback) {
-            return _.delay(function(){
-                ant_factory.render();
+        function draw() {
+            var cnt = 0;
+            var timer = setInterval(function() {
+                cnt += 1;
 
-                if (cc < ant_walks_per_update) {
-                    return renderAnt(cc+1, callback)
+                aco.run()
+                // console.log(cnt)
+
+                if (cnt >= ant_walks_per_update) {
+                    console.log("DONE")
+
+                    let best_len = aco.best_len
+                    $("#best_dist").html(best_len)
+                    repaintWeights()    
+                    
+                    clearInterval(timer);
+
+                    draw()
                 }
+            }, delayTime)
 
-                console.log("called", cc)
-                callback()
-                return true;
-            }, walk_time);
-        }
-
-        function draw(wait) {
-            best_len = aco.run()
-            $("#best_dist").html(best_len)
-            repaintWeights()    
-            // ant_factory.render()
-            step()
+            
         }
         
-        function step() {
-            renderAnt(0, function() {
-                best_len = aco.run()
-                $("#best_dist").html(best_len)
-                repaintWeights()    
-                step()
-            })
-        }
 
         
         function repaintWeights() {
@@ -176,7 +169,7 @@
         }
         
         init()
-        draw(0);
+        draw();
         // drawOnClick();
     </script>
 
