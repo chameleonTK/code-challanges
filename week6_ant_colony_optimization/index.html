@@ -65,13 +65,13 @@
         //     });
         // }
 
-        var num_nodes = 50;
+        var num_nodes = 10;
         var node_radius = 10;
     
         var nodes = []
         var edges = []
 
-        var delayTime = 0.1;
+        var delayTime = 0.01;
         var ant_walks_per_update = 100
         // var walk_time = delayTime/ant_walks_per_update;
         var ant_factory = new AntFactory(svg, ant_walks_per_update);
@@ -137,7 +137,7 @@
                 // console.log(cnt)
 
                 if (cnt >= ant_walks_per_update) {
-                    console.log("DONE")
+                    console.log("UPDATE WEIGHTS")
 
                     let best_len = aco.best_len
                     $("#best_dist").html(best_len)
@@ -147,7 +147,7 @@
 
                     draw()
                 }
-            }, delayTime)
+            }, 0.01)
 
             
         }

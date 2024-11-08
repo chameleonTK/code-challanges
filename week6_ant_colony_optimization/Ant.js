@@ -14,9 +14,11 @@ class AntFactory{
         let n = this.nodes[path[0]];
         let x = n.x;
         let y = n.y;
-        this.ants.push(new Ant(x, y, path, this.steps, this.nodes, this.svg, dist))
+        
+        this.ants.push(new Ant(x, y, path, this.steps, this.nodes, this.svg, dist, 2))
     }
 
+    // Move one step
     move(callback) {
         _.each(this.ants, function(a) {
             a.move(callback);
@@ -31,7 +33,7 @@ class AntFactory{
 }
 
 class Ant{
-    constructor(x, y, path, steps, nodes, svg, dist) {
+    constructor(x, y, path, steps, nodes, svg, dist, kpoints_per_step) {
         this.x = x;
         this.y = y;
 
@@ -60,11 +62,13 @@ class Ant{
             let dy = (nodes[nb].y - nodes[na].y);
 
             let norm = Math.sqrt(dx*dx + dy*dy);
-            
+            // norm = actual distance from na to nb
+
             // walk k units at each step
-            let k = 1;
+            let k = kpoints_per_step;
             dx = (dx / norm) * k;
             dy = (dy / norm) * k;
+            // new dx, dy is the k-unit vector from na to nb
             
             while(true) {
                 x = x + dx;
@@ -73,6 +77,8 @@ class Ant{
                 let ny = (nodes[na].y - y);
 
                 let newd = Math.sqrt(nx*nx + ny*ny);
+                // newd = distance from new (x, y) to na
+                // if newd < norm means we have not reached nb
                 if (newd >= norm) {
                     break
                 }
@@ -94,6 +100,7 @@ class Ant{
 
     }
 
+    // Move one step
     move(callback) {
         
         this.idx += 1

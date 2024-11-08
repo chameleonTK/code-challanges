@@ -159,6 +159,8 @@ class AntColonyOptimizer{
             vm.update_weights(ant)
             vm.ant_factory.clear_ants();
             vm.create_ant();
+
+            console.log("AN ANT REACHED ENDPOINT")
         });
 
         
