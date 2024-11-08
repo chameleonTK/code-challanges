@@ -1,0 +1,3 @@
+[submodule "week8_checkers"]
+	path = week8_checkers
+	url = git@github.com:chameleonTK/checkers.git
